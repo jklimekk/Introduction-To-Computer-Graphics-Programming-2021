@@ -1,0 +1,251 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+	<title>Lab3 - Tekstury</title>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+</head>
+
+
+<body>
+
+<script src="Three.js"></script>
+<script src="ParametricGeometries.js"></script>
+<script src="CurveExtras.js"></script>
+<script src="Detector.js"></script>
+<script src="Stats.js"></script>
+<script src="OrbitControls.js"></script>
+<script src="THREEx.KeyboardState.js"></script>
+<script src="THREEx.FullScreen.js"></script>
+<script src="THREEx.WindowResize.js"></script>
+
+<!-- jQuery code to display an information button and box when clicked. -->
+<script src="jquery-1.9.1.js"></script>
+<script src="jquery-ui.js"></script>
+<link rel=stylesheet href="jquery-ui.css" />
+<link rel=stylesheet href="info.css"/>
+<script src="info.js"></script>
+<div id="infoButton"></div>
+<div id="infoBox" title="Demo Information">
+This three.js demo is part of a collection at
+<a href="http://stemkoski.github.io/Three.js/">http://stemkoski.github.io/Three.js/</a>
+</div>
+<!-- ------------------------------------------------------------ -->
+
+<div id="ThreeJS" style="position: absolute; left:0px; top:0px"></div>
+<script>
+/*
+	Three.js "tutorials by example"
+	Author: Lee Stemkoski
+	Date: July 2013 (three.js v59dev)
+*/
+
+// MAIN
+
+// standard global variables
+var container, scene, camera, renderer, controls, stats;
+var keyboard = new THREEx.KeyboardState();
+var clock = new THREE.Clock();
+
+// custom global variables
+var mirrorCube, mirrorCubeCamera; // for mirror material
+var mirrorSphere, mirrorSphereCamera;
+var sphere2, sphereCamera;
+var notSphere,anotherCamera;
+
+var step = 0;
+
+init();
+animate();
+
+
+
+// FUNCTIONS 		
+function init() 
+{
+	// SCENE
+	scene = new THREE.Scene();
+
+	// CAMERA
+	var SCREEN_WIDTH = window.innerWidth, SCREEN_HEIGHT = window.innerHeight;
+	var VIEW_ANGLE = 45, ASPECT = SCREEN_WIDTH / SCREEN_HEIGHT, NEAR = 0.1, FAR = 20000;
+	camera = new THREE.PerspectiveCamera( VIEW_ANGLE, ASPECT, NEAR, FAR);
+	scene.add(camera);
+	camera.position.set(0,150,400);
+	camera.lookAt(scene.position);
+
+	// RENDERER
+	if ( Detector.webgl )
+		renderer = new THREE.WebGLRenderer( {antialias:true} );
+	else
+		renderer = new THREE.CanvasRenderer(); 
+	renderer.setSize(SCREEN_WIDTH, SCREEN_HEIGHT);
+	container = document.getElementById( 'ThreeJS' );
+	container.appendChild( renderer.domElement );
+
+	// EVENTS
+	THREEx.WindowResize(renderer, camera);
+	THREEx.FullScreen.bindKey({ charCode : 'm'.charCodeAt(0) });
+
+	// CONTROLS
+	controls = new THREE.OrbitControls( camera, renderer.domElement );
+
+	// STATS
+	stats = new Stats();
+	stats.domElement.style.position = 'absolute';
+	stats.domElement.style.bottom = '0px';
+	stats.domElement.style.zIndex = 100;
+	container.appendChild( stats.domElement );
+
+	// LIGHT
+	var light = new THREE.PointLight(0xffffff);
+	light.position.set(0,250,0);
+	scene.add(light);
+
+    // ANOTHER LIGHT
+	var light2 = new THREE.PointLight(0xffffff);
+	light2.position.set(500,250,0);
+	scene.add(light2);
+    
+	// FLOOR
+	var floorTexture = new THREE.TextureLoader().load( 'textures/stone.jpg' );
+	floorTexture.wrapS = floorTexture.wrapT = THREE.RepeatWrapping; 
+	floorTexture.repeat.set( 5, 5 );
+	var floorMaterial = new THREE.MeshBasicMaterial( { map: floorTexture, side:THREE.BackSide } );
+	var floorGeometry = new THREE.PlaneGeometry(1000, 1000, 10, 10);
+	var floor = new THREE.Mesh(floorGeometry, floorMaterial);
+	floor.position.y = -0.5;
+	floor.rotation.x = Math.PI / 2;
+	scene.add(floor);
+	
+	// SKYBOX/FOG
+	var materialArray = [];
+	materialArray.push(new THREE.MeshBasicMaterial( { map: THREE.ImageUtils.loadTexture( 'textures/dawnmountain-xpos.png' ) }));
+	materialArray.push(new THREE.MeshBasicMaterial( { map: THREE.ImageUtils.loadTexture( 'textures/dawnmountain-xneg.png' ) }));
+	materialArray.push(new THREE.MeshBasicMaterial( { map: THREE.ImageUtils.loadTexture( 'textures/dawnmountain-ypos.png' ) }));
+	materialArray.push(new THREE.MeshBasicMaterial( { map: THREE.ImageUtils.loadTexture( 'textures/dawnmountain-yneg.png' ) }));
+	materialArray.push(new THREE.MeshBasicMaterial( { map: THREE.ImageUtils.loadTexture( 'textures/dawnmountain-zpos.png' ) }));
+	materialArray.push(new THREE.MeshBasicMaterial( { map: THREE.ImageUtils.loadTexture( 'textures/dawnmountain-zneg.png' ) }));
+	for (var i = 0; i < 6; i++)
+	   materialArray[i].side = THREE.BackSide;
+	var skyboxMaterial = new THREE.MeshFaceMaterial( materialArray );
+	var skyboxGeom = new THREE.BoxGeometry( 5000, 5000, 5000, 64, 64, 64 );
+	var skybox = new THREE.Mesh( skyboxGeom, skyboxMaterial );
+	scene.add( skybox );	
+	
+	////////////
+	// CUSTOM //
+	////////////
+	
+	// szescian
+	var cubeGeom = new THREE.CubeGeometry(200, 200, 30, 10, 10, 10); // wieksza liczba segmentow
+	mirrorCubeCamera = new THREE.CubeCamera( 0.02, 1000, 512 ); // po zmianie w odbiciu nie widac tla tylko podloze pod prostopadloscianem
+	scene.add( mirrorCubeCamera );
+	var mirrorCubeMaterial = new THREE.MeshBasicMaterial( { envMap: mirrorCubeCamera.renderTarget } );
+	mirrorCube = new THREE.Mesh( cubeGeom, mirrorCubeMaterial );
+	mirrorCube.position.set(-75,80,0);
+	mirrorCubeCamera.position.set(-155,50,0);
+	scene.add(mirrorCube);
+
+    // sfera
+	var sphereGeom =  new THREE.SphereGeometry( 50, 32, 16 ); // radius, segmentsWidth, segmentsHeight
+	mirrorSphereCamera = new THREE.CubeCamera( 0.1, 5000, 512 );
+	scene.add( mirrorSphereCamera );
+	mirrorSphere = createMesh( sphereGeom, "brick-wall.jpg" );
+	mirrorSphere.position.set(75,50,0);
+	mirrorSphereCamera.position.set(75,100,0);
+	scene.add(mirrorSphere);
+
+    // szescian
+    var cube2Geom = new THREE.CubeGeometry(100, 100, 100,1,1,1);
+    sphereCamera = new THREE.CubeCamera( 0.1, 5000, 512 );
+    scene.add( sphereCamera );
+    sphere2 = createMesh(cube2Geom, "plaster.jpg", "plaster-normal.jpg");
+    sphere2.position.set(-250, 80, -100);
+	sphereCamera.position.set(-75,50,0);
+    scene.add(sphere2);
+
+    // szescian bump map
+    var cube3Geom = new THREE.CubeGeometry(100, 100, 100,1,1,1);
+    anotherCamera = new THREE.CubeCamera( 0.1, 5000, 512 );
+    scene.add( anotherCamera );
+    notSphere = createMeshBump(cube3Geom, "stone.jpg");
+    notSphere.position.set(-450, 50, 50);
+	anotherCamera.position.set(-75,50,0);
+    scene.add(notSphere);
+    
+
+
+}
+
+function animate() 
+{
+    requestAnimationFrame( animate );
+	render();		
+	update();
+}
+
+function update()
+{
+	if ( keyboard.pressed("z") ) 
+	{ 
+		// do something
+	}
+	
+	controls.update();
+	stats.update();
+}
+
+function render() 
+{
+	// move the CubeCamera to the position of the object
+	//    that has a reflective surface, "take a picture" in each direction
+	//    and apply it to the surface.
+	// need to hide surface before and after so that it does not
+	//    "get in the way" of the camera
+	mirrorCube.visible = false;
+	mirrorCubeCamera.updateCubeMap( renderer, scene );
+	mirrorCube.visible = true;
+
+    step += 0.01
+    sphere2.rotation.y = step;
+    sphere2.rotation.x = step;
+    mirrorSphere.rotation.x = step;
+
+	
+	renderer.render( scene, camera );
+}
+
+
+function createMesh(geom, imageFile) {
+    var texture = new THREE.TextureLoader().load("textures/" + imageFile);
+	texture.repeat.set( 1, 1 );
+    var mat = new THREE.MeshPhongMaterial();
+    mat.map = texture;
+    var mesh = new THREE.Mesh(geom, mat);
+    return mesh;
+}
+
+function createMeshBump(geom, imageFile, bump) {
+    var texture = THREE.ImageUtils.loadTexture("textures/" + imageFile)
+    geom.computeVertexNormals();
+    var mat = new THREE.MeshPhongMaterial();
+    mat.map = texture;
+
+    if (bump) {
+        var bump = THREE.ImageUtils.loadTexture("textures/" + bump)
+        mat.bumpMap = bump;
+        mat.bumpScale = 0.2;
+        console.log('d');
+    }
+    // create a multimaterial
+    var mesh = new THREE.Mesh(geom, mat);
+
+    return mesh;
+}
+
+</script>
+
+</body>
+</html>

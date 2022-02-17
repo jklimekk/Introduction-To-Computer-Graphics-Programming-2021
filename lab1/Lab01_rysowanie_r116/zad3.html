@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+ 
+ <html>
+    <head>
+        <title>zad3</title>
+        <meta http-equiv="content-type" content="text/html; charset=ISO-8859-1">
+        <meta name="viewport" content="width=device-width, height=device-height, initial-scale=1">
+        <style type="text/css">
+            body {
+                background-color: #000000;
+                overflow: hidden;
+            }
+        </style>
+        <script src="three.js"></script>
+        <script src="Detector.js"></script>
+    </head>
+    <body>
+        <div id="WebGLCanvas"> </div>
+        
+        <script>
+            var scene;
+            var camera;
+            var treeMesh1;
+            var treeMesh2;
+            var treeMesh3;
+            var carMesh;
+            var wheelMesh1;
+            var wheelMesh2;
+
+            initializeScene();
+
+            animateScene();
+ 
+            function initializeScene(){
+                 
+                if(Detector.webgl){
+                   renderer = new THREE.WebGLRenderer({antialias:true});
+                } else {
+                    renderer = new THREE.CanvasRenderer();
+                }
+
+                renderer.setClearColor(0x000000, 1);
+
+                canvasWidth = window.innerWidth;
+                canvasHeight = window.innerHeight;
+
+                renderer.setSize(canvasWidth, canvasHeight);
+
+                document.getElementById("WebGLCanvas").appendChild(renderer.domElement);
+
+                scene = new THREE.Scene();
+                
+                camera = new THREE.PerspectiveCamera(45, canvasWidth / canvasHeight, 1, 100);
+                camera.position.set(0, 0, 10);
+                camera.lookAt(scene.position);
+                scene.add(camera);
+
+                // triangle
+                var triangleGeometry = new THREE.Geometry();
+                triangleGeometry.vertices.push(new THREE.Vector3( 0.0,  1.0, 0.0));
+                triangleGeometry.vertices.push(new THREE.Vector3(-1.0, -1.0, 0.0));
+                triangleGeometry.vertices.push(new THREE.Vector3( 1.0, -1.0, 0.0));
+                triangleGeometry.faces.push(new THREE.Face3(0, 1, 2));
+
+                // square
+                var squareGeometry = new THREE.Geometry();
+                squareGeometry.vertices.push(new THREE.Vector3(-1.0,  1.0, 0.0));
+                squareGeometry.vertices.push(new THREE.Vector3( 1.0,  1.0, 0.0));
+                squareGeometry.vertices.push(new THREE.Vector3( 1.0, -1.0, 0.0));
+                squareGeometry.vertices.push(new THREE.Vector3(-1.0, -1.0, 0.0));
+                squareGeometry.faces.push(new THREE.Face3(0, 1, 2));
+				squareGeometry.faces.push(new THREE.Face3(0, 2, 3));
+
+                // smaller square
+                var smallSquareGeometry = squareGeometry.clone();
+                smallSquareGeometry.scale(0.3, 0.3, 0.3);
+
+                // rectangle
+                var rectangleGeometry = squareGeometry.clone();
+                rectangleGeometry.scale(0.3, 0.7, 0.3);
+
+                // big rectangle
+                var bigRectangleGeometry = squareGeometry.clone();
+                bigRectangleGeometry.scale(2, 0.8, 0.3);
+
+                // circle
+                var circleGeometry = new THREE.CircleGeometry(0.4, 10);
+
+                // materials
+ 
+                var treeMaterial = new THREE.MeshBasicMaterial({
+                    color:0x339933,
+                    side:THREE.DoubleSide
+                });
+
+                var stumpMaterial = new THREE.MeshBasicMaterial({
+                    color:0x804000,
+                    side:THREE.DoubleSide
+                });
+
+                var roofMaterial = new THREE.MeshBasicMaterial({
+                    color:0xff0000,
+                    side:THREE.DoubleSide
+                });
+
+                var houseMaterial = new THREE.MeshBasicMaterial({
+                    color:0xffff66,
+                    side:THREE.DoubleSide
+                });
+
+                var windowMaterial = new THREE.MeshBasicMaterial({
+                    color:0x33ccff,
+                    side:THREE.DoubleSide
+                });
+
+                var doorMaterial = new THREE.MeshBasicMaterial({
+                    color:0x996600,
+                    side:THREE.DoubleSide
+                });
+
+                var carMaterial = new THREE.MeshBasicMaterial({
+                    color:0xff9933,
+                    side:THREE.DoubleSide
+                });
+
+                var wheelMaterial = new THREE.MeshBasicMaterial({
+                    color:0x404040,
+                    side:THREE.DoubleSide
+                });
+
+                // mesh
+
+                treeMesh1 = new THREE.Mesh(triangleGeometry, treeMaterial);
+                treeMesh2 = treeMesh1.clone();
+                treeMesh3 = treeMesh1.clone();
+
+                var stumpMesh = new THREE.Mesh(smallSquareGeometry, stumpMaterial);
+
+                var roofMesh = new THREE.Mesh(triangleGeometry, roofMaterial);
+
+                var houseMesh = new THREE.Mesh(squareGeometry, houseMaterial);
+
+                var windowMesh = new THREE.Mesh(smallSquareGeometry, windowMaterial);
+                 
+                var doorMesh = new THREE.Mesh(rectangleGeometry, doorMaterial);
+
+                carMesh = new THREE.Mesh(bigRectangleGeometry, carMaterial);
+
+                wheelMesh1 = new THREE.Mesh(circleGeometry, wheelMaterial);
+                wheelMesh2 = wheelMesh1.clone();
+
+                // setting positions
+
+                treeMesh1.position.set(-1.5, 2.0, 0);
+                treeMesh2.position.set(-1.5, 1.0, 0);
+                treeMesh3.position.set(-1.5, 0.0, 0);
+
+                stumpMesh.position.set(-1.5, -1.3, 0);
+
+                roofMesh.position.set(1.5, 2.0, 0);
+
+                houseMesh.position.set(1.5, 0.0, 0);
+
+                windowMesh.position.set(1.8, 0.3, 0);
+
+                doorMesh.position.set(1.1, -0.3, 0);
+
+                carMesh.position.set(-6, -2, 0);
+                
+                wheelMesh1.position.set(-7, -3, 0);
+                wheelMesh2.position.set(-5, -3, 0);
+
+                // adding to scene
+
+                scene.add(stumpMesh);
+                scene.add(treeMesh1);
+                scene.add(treeMesh2);
+                scene.add(treeMesh3);
+                scene.add(roofMesh);
+                scene.add(houseMesh);
+                scene.add(windowMesh);
+                scene.add(doorMesh);
+                scene.add(carMesh);
+                scene.add(wheelMesh1);
+                scene.add(wheelMesh2);
+            }
+
+            function animateScene(){
+                treeMesh1.rotation.y += 0.1;
+                treeMesh2.rotation.y -= 0.2;
+                treeMesh3.rotation.y += 0.3;
+
+                carMesh.translateX(0.01);
+                wheelMesh1.position.x += 0.01;
+                wheelMesh2.position.x += 0.01;
+
+                wheelMesh1.rotation.z -= 0.05;
+                wheelMesh2.rotation.z -= 0.05;
+
+                requestAnimationFrame(animateScene);
+
+                renderScene();
+            }
+ 
+            function renderScene(){
+                renderer.render(scene, camera);
+            }
+         </script>
+     </body>
+</html>

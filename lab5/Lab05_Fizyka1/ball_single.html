@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title></title>
+  <link rel="stylesheet"  />
+</head>
+<body>
+  
+  <div class="viewport"></div>
+
+  <script src="three.min.js"></script>
+  <script src="physi.js"></script>
+  //<script src="OrbitControls.js"></script>
+  <script>
+    var container, scene, renderer, camera, light, ball, plane;
+    var WIDTH, HEIGHT, VIEW_ANGLE, ASPECT, NEAR, FAR;
+    var step = 0;
+
+    var clock = new THREE.Clock();
+
+    Physijs.scripts.worker = 'physijs_worker.js';
+    Physijs.scripts.ammo = 'ammo.js';
+
+    container = document.querySelector('.viewport');
+
+    WIDTH = window.innerWidth,
+    HEIGHT = window.innerHeight;
+
+    VIEW_ANGLE = 45,
+    ASPECT = WIDTH / HEIGHT,
+    NEAR = 1,
+    FAR = 10000;
+
+    scene = new Physijs.Scene();
+    scene.setGravity(new THREE.Vector3( 0, -50., 0 ));
+    scene.addEventListener('update', function() {
+      //ball.setLinearVelocity(new THREE.Vector3(0,0,0));
+      scene.simulate(undefined, 2);
+    });
+
+    renderer = new THREE.WebGLRenderer({
+      antialias: true
+    });
+
+    renderer.setSize(WIDTH, HEIGHT);
+    renderer.shadowMapEnabled = true;
+    renderer.shadowMapSoft = true;
+    renderer.shadowMapType = THREE.PCFShadowMap;
+    renderer.shadowMapAutoUpdate = true;
+
+    container.appendChild(renderer.domElement);
+
+    camera = new THREE.PerspectiveCamera(VIEW_ANGLE, ASPECT, NEAR, FAR);
+
+    camera.position.set(60, 40, 120);
+    camera.lookAt(scene.position);
+    scene.add(camera);
+    //const controls = new OrbitControls( camera, renderer.domElement );
+
+    light = new THREE.DirectionalLight(0xffffff);
+
+    light.position.set(0, 100, 60);
+    light.castShadow = true;
+    light.shadowCameraLeft = -60;
+    light.shadowCameraTop = -60;
+    light.shadowCameraRight = 60;
+    light.shadowCameraBottom = 60;
+    light.shadowCameraNear = 1;
+    light.shadowCameraFar = 1000;
+    light.shadowBias = -.0001
+    light.shadowMapWidth = light.shadowMapHeight = 1024;
+    light.shadowDarkness = .7;
+
+    scene.add(light);
+    //controls.update();
+
+    plane = new Physijs.BoxMesh(
+      new THREE.CubeGeometry(100, 100, 2, 200, 200),
+      Physijs.createMaterial(
+        new THREE.MeshLambertMaterial({
+          color: 0xeeeeee
+        }),
+        .4,
+        .99
+      ),
+      0
+    );
+
+    plane.rotation.x = -Math.PI / 2;
+    //plane.rotation.y = Math.PI / 24;
+    plane.receiveShadow = true;
+
+    scene.add(plane);
+
+    
+      ball = new Physijs.SphereMesh(
+        new THREE.SphereGeometry(
+          4,
+          16,
+          16
+        ),
+        Physijs.createMaterial(
+          new THREE.MeshLambertMaterial({
+            color: 0xff0000,
+            reflectivity: .8
+          }),
+          .6,
+          .99
+        ),
+        1
+      );
+
+      var r = {
+        x: Math.random() * (Math.PI - Math.PI / 12) + Math.PI / 12,
+        y: Math.random() * (Math.PI - Math.PI / 12) + Math.PI / 12,
+        z: Math.random() * (Math.PI - Math.PI / 12) + Math.PI / 12
+      };
+
+      //ball.rotation.set(r.x, r.y, r.z);
+      ball.position.y = 5;
+      ball.castShadow = true;
+      ball.receiveShadow = true;
+
+      scene.add(ball);
+
+      ball.setLinearVelocity(new THREE.Vector3(0,0,0));
+    
+
+    
+
+    render();
+    
+    function render() {
+
+      scene.simulate();
+
+      for (var i = 5; i < scene.children.length - 5; i++) {
+        var obj = scene.children[i];
+
+        if (obj.position.y <= -50) {
+          scene.remove(obj);
+        }
+      }
+
+      
+      plane.rotation.y = 0.15 * Math.cos(step);
+      plane.__dirtyRotation = true;
+      step+=0.007;
+
+      renderer.render(scene, camera);
+      requestAnimationFrame(render);
+    }
+  </script>
+</body>
+</html>
