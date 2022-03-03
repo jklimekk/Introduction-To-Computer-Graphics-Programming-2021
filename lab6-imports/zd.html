@@ -4,7 +4,7 @@
 		<title>three.js webgl - FBX loader</title>
 		<meta charset="utf-8">
 		<meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
-		<link type="text/css" rel="stylesheet" href="main.css">
+		<link type="text/css" rel="stylesheet" href="examples/main.css">
 	</head>
 
 	<body>
@@ -15,12 +15,12 @@
 
 		<script type="module">
 
-			import * as THREE from '../build/three.module.js';
+			import * as THREE from './build/three.module.js';
 
-			import Stats from './jsm/libs/stats.module.js';
+			import Stats from './examples/jsm/libs/stats.module.js';
 
-			import { OrbitControls } from './jsm/controls/OrbitControls.js';
-			import { FBXLoader } from './jsm/loaders/FBXLoader.js';
+			import { OrbitControls } from './examples/jsm/controls/OrbitControls.js';
+			import { FBXLoader } from './examples/jsm/loaders/FBXLoader.js';
 
 			var container, stats, controls;
 			var camera, scene, renderer, light;
@@ -76,12 +76,12 @@
 
 				// SKYBOX/FOG
 				var materialArray = [];
-				materialArray.push(new THREE.MeshBasicMaterial( { map: THREE.ImageUtils.loadTexture( 'textures/dawnmountain-xpos.png' ) }));
-				materialArray.push(new THREE.MeshBasicMaterial( { map: THREE.ImageUtils.loadTexture( 'textures/dawnmountain-xneg.png' ) }));
-				materialArray.push(new THREE.MeshBasicMaterial( { map: THREE.ImageUtils.loadTexture( 'textures/dawnmountain-ypos.png' ) }));
-				materialArray.push(new THREE.MeshBasicMaterial( { map: THREE.ImageUtils.loadTexture( 'textures/dawnmountain-yneg.png' ) }));
-				materialArray.push(new THREE.MeshBasicMaterial( { map: THREE.ImageUtils.loadTexture( 'textures/dawnmountain-zpos.png' ) }));
-				materialArray.push(new THREE.MeshBasicMaterial( { map: THREE.ImageUtils.loadTexture( 'textures/dawnmountain-zneg.png' ) }));
+				materialArray.push(new THREE.MeshBasicMaterial( { map: THREE.ImageUtils.loadTexture( 'examples/textures/dawnmountain-xpos.png' ) }));
+				materialArray.push(new THREE.MeshBasicMaterial( { map: THREE.ImageUtils.loadTexture( 'examples/textures/dawnmountain-xneg.png' ) }));
+				materialArray.push(new THREE.MeshBasicMaterial( { map: THREE.ImageUtils.loadTexture( 'examples/textures/dawnmountain-ypos.png' ) }));
+				materialArray.push(new THREE.MeshBasicMaterial( { map: THREE.ImageUtils.loadTexture( 'examples/textures/dawnmountain-yneg.png' ) }));
+				materialArray.push(new THREE.MeshBasicMaterial( { map: THREE.ImageUtils.loadTexture( 'examples/textures/dawnmountain-zpos.png' ) }));
+				materialArray.push(new THREE.MeshBasicMaterial( { map: THREE.ImageUtils.loadTexture( 'examples/textures/dawnmountain-zneg.png' ) }));
 				for (var i = 0; i < 6; i++)
 				materialArray[i].side = THREE.BackSide;
 				var skyboxMaterial = new THREE.MeshFaceMaterial( materialArray );
@@ -126,7 +126,7 @@
 				// }
 
 
-				loader.load( 'models/fbx/Boxing.fbx', function ( object ) {
+				loader.load( 'examples/models/fbx/Boxing.fbx', function ( object ) {
 
 					mixer = new THREE.AnimationMixer( object );
 
@@ -148,7 +148,7 @@
 
 				} );
 
-				loader.load( 'models/fbx/Boxing.fbx', function ( object ) {
+				loader.load( 'examples/models/fbx/Boxing.fbx', function ( object ) {
 
 					mixer2 = new THREE.AnimationMixer( object );
 

@@ -9,9 +9,9 @@
   
   <div class="viewport"></div>
 
-  <script src="three.min.js"></script>
-  <script src="physi.js"></script>
-  //<script src="OrbitControls.js"></script>
+  <script src="resources/three.min.js"></script>
+  <script src="resources/physi.js"></script>
+  //<script src="resources/OrbitControls.js"></script>
   <script>
     var container, scene, renderer, camera, light, ball, cube, plane, wall, wall2;
     var WIDTH, HEIGHT, VIEW_ANGLE, ASPECT, NEAR, FAR;
@@ -20,7 +20,7 @@
 
     var clock = new THREE.Clock();
 
-    Physijs.scripts.worker = 'physijs_worker.js';
+    Physijs.scripts.worker = 'resources/physijs_worker.js';
     Physijs.scripts.ammo = 'ammo.js';
 
     container = document.querySelector('.viewport');

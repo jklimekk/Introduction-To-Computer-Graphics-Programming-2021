@@ -10,22 +10,22 @@
 
 <body>
 
-<script src="Three.js"></script>
-<script src="ParametricGeometries.js"></script>
-<script src="CurveExtras.js"></script>
-<script src="Detector.js"></script>
-<script src="Stats.js"></script>
-<script src="OrbitControls.js"></script>
-<script src="THREEx.KeyboardState.js"></script>
-<script src="THREEx.FullScreen.js"></script>
-<script src="THREEx.WindowResize.js"></script>
+<script src="resources/Three.js"></script>
+<script src="resources/ParametricGeometries.js"></script>
+<script src="resources/CurveExtras.js"></script>
+<script src="resources/Detector.js"></script>
+<script src="resources/Stats.js"></script>
+<script src="resources/OrbitControls.js"></script>
+<script src="resources/THREEx.KeyboardState.js"></script>
+<script src="resources/THREEx.FullScreen.js"></script>
+<script src="resources/THREEx.WindowResize.js"></script>
 
 <!-- jQuery code to display an information button and box when clicked. -->
-<script src="jquery-1.9.1.js"></script>
-<script src="jquery-ui.js"></script>
-<link rel=stylesheet href="jquery-ui.css" />
-<link rel=stylesheet href="info.css"/>
-<script src="info.js"></script>
+<script src="resources/jquery-1.9.1.js"></script>
+<script src="resources/jquery-ui.js"></script>
+<link rel=stylesheet href="resources/jquery-ui.css" />
+<link rel=stylesheet href="resources/info.css"/>
+<script src="resources/info.js"></script>
 <div id="infoButton"></div>
 <div id="infoBox" title="Demo Information">
 This three.js demo is part of a collection at
@@ -109,7 +109,7 @@ function init()
 	scene.add(light2);
     
 	// FLOOR
-	var floorTexture = new THREE.TextureLoader().load( 'textures/stone.jpg' );
+	var floorTexture = new THREE.TextureLoader().load( 'resources/textures/stone.jpg' );
 	floorTexture.wrapS = floorTexture.wrapT = THREE.RepeatWrapping; 
 	floorTexture.repeat.set( 5, 5 );
 	var floorMaterial = new THREE.MeshBasicMaterial( { map: floorTexture, side:THREE.BackSide } );
@@ -121,12 +121,12 @@ function init()
 	
 	// SKYBOX/FOG
 	var materialArray = [];
-	materialArray.push(new THREE.MeshBasicMaterial( { map: THREE.ImageUtils.loadTexture( 'textures/dawnmountain-xpos.png' ) }));
-	materialArray.push(new THREE.MeshBasicMaterial( { map: THREE.ImageUtils.loadTexture( 'textures/dawnmountain-xneg.png' ) }));
-	materialArray.push(new THREE.MeshBasicMaterial( { map: THREE.ImageUtils.loadTexture( 'textures/dawnmountain-ypos.png' ) }));
-	materialArray.push(new THREE.MeshBasicMaterial( { map: THREE.ImageUtils.loadTexture( 'textures/dawnmountain-yneg.png' ) }));
-	materialArray.push(new THREE.MeshBasicMaterial( { map: THREE.ImageUtils.loadTexture( 'textures/dawnmountain-zpos.png' ) }));
-	materialArray.push(new THREE.MeshBasicMaterial( { map: THREE.ImageUtils.loadTexture( 'textures/dawnmountain-zneg.png' ) }));
+	materialArray.push(new THREE.MeshBasicMaterial( { map: THREE.ImageUtils.loadTexture( 'resources/textures/dawnmountain-xpos.png' ) }));
+	materialArray.push(new THREE.MeshBasicMaterial( { map: THREE.ImageUtils.loadTexture( 'resources/textures/dawnmountain-xneg.png' ) }));
+	materialArray.push(new THREE.MeshBasicMaterial( { map: THREE.ImageUtils.loadTexture( 'resources/textures/dawnmountain-ypos.png' ) }));
+	materialArray.push(new THREE.MeshBasicMaterial( { map: THREE.ImageUtils.loadTexture( 'resources/textures/dawnmountain-yneg.png' ) }));
+	materialArray.push(new THREE.MeshBasicMaterial( { map: THREE.ImageUtils.loadTexture( 'resources/textures/dawnmountain-zpos.png' ) }));
+	materialArray.push(new THREE.MeshBasicMaterial( { map: THREE.ImageUtils.loadTexture( 'resources/textures/dawnmountain-zneg.png' ) }));
 	for (var i = 0; i < 6; i++)
 	   materialArray[i].side = THREE.BackSide;
 	var skyboxMaterial = new THREE.MeshFaceMaterial( materialArray );
@@ -219,7 +219,7 @@ function render()
 
 
 function createMesh(geom, imageFile) {
-    var texture = new THREE.TextureLoader().load("textures/" + imageFile);
+    var texture = new THREE.TextureLoader().load("resources/textures/" + imageFile);
 	texture.repeat.set( 1, 1 );
     var mat = new THREE.MeshPhongMaterial();
     mat.map = texture;
@@ -228,13 +228,13 @@ function createMesh(geom, imageFile) {
 }
 
 function createMeshBump(geom, imageFile, bump) {
-    var texture = THREE.ImageUtils.loadTexture("textures/" + imageFile)
+    var texture = THREE.ImageUtils.loadTexture("resources/textures/" + imageFile)
     geom.computeVertexNormals();
     var mat = new THREE.MeshPhongMaterial();
     mat.map = texture;
 
     if (bump) {
-        var bump = THREE.ImageUtils.loadTexture("textures/" + bump)
+        var bump = THREE.ImageUtils.loadTexture("resources/textures/" + bump)
         mat.bumpMap = bump;
         mat.bumpScale = 0.2;
         console.log('d');
